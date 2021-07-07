@@ -1,0 +1,13 @@
+{
+    "OakdDataSourceParams": {
+        "stereo_depth_confidence_threshold": 250,
+        "stereo_depth_median_filter": 3,
+        "stereo_depth_left_right_check": 1,
+        "stereo_depth_extended_disparity": 0,
+        "stereo_depth_subpixel": 0,
+        "baseline_mm": 75.0,
+        "field_of_view_rad": 1.2541936,
+        "stereo_wls_lambda": 8000.0,
+        "stereo_wls_sigma": 1.5
+    }
+}
