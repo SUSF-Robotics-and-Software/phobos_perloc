@@ -7,7 +7,8 @@
         "stereo_depth_subpixel": 0,
         "baseline_mm": 75.0,
         "field_of_view_rad": 1.2541936,
-        "stereo_wls_lambda": 8000.0,
-        "stereo_wls_sigma": 1.5
+        "stereo_wls_lambda": 10000.0,
+        "stereo_wls_sigma": 2.5,
+        "enable_wls_tuning": 0
     }
 }

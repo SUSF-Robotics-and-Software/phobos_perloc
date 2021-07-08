@@ -19,6 +19,7 @@
 class DepthFilter {
     public:
         DepthFilter();
+        DepthFilter(bool enable_vis);
         ~DepthFilter();
 
         /**
@@ -38,8 +39,25 @@ class DepthFilter {
          */
         void set_wls_params(double lambda_in, double sigma_in);
 
+    public:
+        const static std::string vis_window_name;
+
     private:
+        static void on_trackbar_lambda_change(int pos, void *data) {
+            DepthFilter *depth_filter = (DepthFilter *)data;
+            depth_filter->lambda = (double)pos;
+            depth_filter->wls_filter->setLambda(depth_filter->lambda);
+        }
+
+        static void on_trackbar_sigma_change(int pos, void *data) {
+            DepthFilter *depth_filter = (DepthFilter *)data;
+            depth_filter->sigma = (double)pos / 10.0;
+            depth_filter->wls_filter->setSigmaColor(depth_filter->sigma);
+        }
+
         cv::Ptr<cv::ximgproc::DisparityWLSFilter> wls_filter;
+        double lambda = 8000.0;
+        double sigma = 1.5;
 };
 
 /**

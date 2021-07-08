@@ -12,6 +12,7 @@
 
 #include "Filtering.hpp"
 
+#include <opencv4/opencv2/highgui.hpp>
 #include <opencv4/opencv2/imgproc.hpp>
 #include <opencv4/opencv2/ximgproc.hpp>
 
@@ -37,8 +38,20 @@ void dilate_depth_img(cv::Mat &depth_img_inout) {
     cv::bitwise_and(depth_img_inout, mask, depth_img_inout);
 }
 
+const std::string DepthFilter::vis_window_name = "depth (filtered)";
+
 DepthFilter::DepthFilter() {
     wls_filter = cv::ximgproc::createDisparityWLSFilterGeneric(false);
+}
+
+DepthFilter::DepthFilter(bool enable_vis) {
+    wls_filter = cv::ximgproc::createDisparityWLSFilterGeneric(false);
+
+    if (enable_vis) {
+        cv::namedWindow(vis_window_name, cv::WINDOW_AUTOSIZE);
+        cv::createTrackbar("lambda", vis_window_name, NULL, (int)lambda * 2, on_trackbar_lambda_change, this);
+        cv::createTrackbar("sigma", vis_window_name, NULL, (int)(sigma * 10.0) * 2, on_trackbar_sigma_change, this);
+    }
 }
 
 DepthFilter::~DepthFilter() {
@@ -51,7 +64,7 @@ void DepthFilter::filter(ImgFrame &img_frame_inout, double depth_scale_factor) {
     // right-aligned 
     wls_filter->filter(
         img_frame_inout.disp_img, 
-        img_frame_inout.right_img, 
+        img_frame_inout.left_img, 
         img_frame_inout.disp_img
     );
 
@@ -61,6 +74,9 @@ void DepthFilter::filter(ImgFrame &img_frame_inout, double depth_scale_factor) {
 }
 
 void DepthFilter::set_wls_params(double lambda_in, double sigma_in) {
+    cv::setTrackbarPos("lambda", vis_window_name, (int)lambda);
+    cv::setTrackbarPos("sigma", vis_window_name, (int)(sigma * 10.0));
+
     wls_filter->setLambda(lambda_in);
     wls_filter->setSigmaColor(sigma_in);
 }

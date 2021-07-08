@@ -41,6 +41,7 @@ class OakdDataSourceParams {
             field_of_view_rad = (double)node["field_of_view_rad"];
             stereo_wls_lambda = (double)node["stereo_wls_lambda"];
             stereo_wls_sigma = (double)node["stereo_wls_sigma"];
+            enable_wls_tuning = (double)node["enable_wls_tuning"];
         }
     
     // Data 
@@ -54,6 +55,7 @@ class OakdDataSourceParams {
         double field_of_view_rad;
         double stereo_wls_lambda;
         double stereo_wls_sigma;
+        bool enable_wls_tuning;
 };
 
 class OakdDataSource: DataSource {
@@ -88,7 +90,7 @@ class OakdDataSource: DataSource {
         std::shared_ptr<dai::DataOutputQueue> disp_queue;
 
         // Depth image filterer
-        DepthFilter depth_filter;
+        DepthFilter *p_depth_filter;
         double depth_scale_factor;
 };
 

@@ -29,20 +29,12 @@ int main(int argc, char *p_argv[]) {
     while (true) {
         oakd.get_img_frame(frame);
 
-        // Dilate the depth image
-        // dilate_depth_img(frame.depth_img);
-
-        // Get the zero-depth mask to visualise shaddowing
-        // cv::imshow("zero_depth", get_zero_depth_mask(frame.depth_img));
+        // Display image previews
         cv::imshow(
             "left (zero depth higlighted)", 
             get_vis_shadows(frame.left_img, frame.depth_img)
         );
-        cv::imshow(
-            "right (zero depth higlighted)", 
-            get_vis_shadows(frame.right_img, frame.depth_img)
-        );
-        cv::imshow("depth (mm)", get_vis_depth_img(frame.depth_img, 4000));
+        cv::imshow(DepthFilter::vis_window_name, get_vis_depth_img(frame.depth_img, 4000));
 
         cv::waitKey(1);
     }

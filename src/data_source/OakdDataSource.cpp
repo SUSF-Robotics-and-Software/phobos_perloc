@@ -29,7 +29,7 @@ OakdDataSource::OakdDataSource() {
     fs["OakdDataSourceParams"] >> params;
 
     // Create depth filter
-    depth_filter = DepthFilter();
+    p_depth_filter = new DepthFilter(params.enable_wls_tuning);
 
     // Create pipeline
     p_pipeline = new dai::Pipeline();
@@ -52,8 +52,7 @@ OakdDataSource::OakdDataSource() {
     stereo_node->setExtendedDisparity(params.stereo_depth_extended_disparity);
     stereo_node->setSubpixel(params.stereo_depth_subpixel);
     stereo_node->setRectifyMirrorFrame(true);
-    // TODO: when added to depthai-core :(
-    // stereo_node->setDepthAlign(dai::CameraBoardSocket::LEFT);
+    stereo_node->setDepthAlign(dai::StereoDepthProperties::DepthAlign::RECTIFIED_LEFT);
     
     // Create outputs
     left_out = p_pipeline->create<dai::node::XLinkOut>();
@@ -87,7 +86,7 @@ OakdDataSource::OakdDataSource() {
     depth_scale_factor 
         = params.baseline_mm * 640.0 
         / (2.0 * tan(params.field_of_view_rad / 2.0));
-    depth_filter.set_wls_params(
+    p_depth_filter->set_wls_params(
         params.stereo_wls_lambda, 
         params.stereo_wls_sigma
     );
@@ -107,7 +106,7 @@ void OakdDataSource::get_img_frame(ImgFrame &img_frame_out) {
     img_frame_out.disp_img = in_disp->getFrame(true);
 
     // Filter the frame to calculate the depth image
-    depth_filter.filter(img_frame_out, depth_scale_factor);
+    p_depth_filter->filter(img_frame_out, depth_scale_factor);
 }
 
 bool OakdDataSource::get_img_frame_nonblocking(ImgFrame &img_frame_out) {
@@ -124,7 +123,7 @@ bool OakdDataSource::get_img_frame_nonblocking(ImgFrame &img_frame_out) {
     img_frame_out.disp_img = in_disp->getFrame(true);
 
     // Filter the frame to calculate the depth image
-    depth_filter.filter(img_frame_out, depth_scale_factor);
+    p_depth_filter->filter(img_frame_out, depth_scale_factor);
 
     return true;
 }
