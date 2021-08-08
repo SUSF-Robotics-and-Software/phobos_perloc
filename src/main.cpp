@@ -14,16 +14,20 @@
 
 #include "data_source/OakdDataSource.hpp"
 #include "vis/Vis.hpp"
-#include "filtering/Filtering.hpp"
+#include "streaming/Streaming.hpp"
 
 int main(int argc, char *p_argv[]) {
     std::cout << "---- Phobos Perloc ----" << std::endl;
 
-    std::cout << "Connecting to OAK-D... ";
+    std::cout << "Connecting to OAK-D" << std::endl;
 
     OakdDataSource oakd;
 
-    std::cout << "done" << std::endl;
+    std::cout << "Createing ImgStreamer" << std::endl;
+
+    ImgStreamer img_streamer;
+    img_streamer.set_stream_enabled(ImgStreamer::StreamId::LEFT, true);
+    img_streamer.start();
 
     ImgFrame frame;
     while (true) {
@@ -35,7 +39,13 @@ int main(int argc, char *p_argv[]) {
             get_vis_shadows(frame.left_img, frame.depth_img)
         );
         cv::imshow(DepthFilter::vis_window_name, get_vis_depth_img(frame.depth_img, 4000));
+        
+        img_streamer.feed_next(frame);
 
-        cv::waitKey(1);
+        if (cv::waitKey(1) == 'q') {
+            break;
+        }
     }
+
+    img_streamer.stop();
 }
